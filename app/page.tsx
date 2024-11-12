@@ -4,12 +4,14 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { companyData } from '@/lib/company-data'
 
-export default function ChatComponent() {
-  const [messages, setMessages] = useState<Array<{ role: string, content: string }>>([])
+export default function CompanyQABot() {
+  const [messages, setMessages] = useState<Array<{ role: string, content: string }>>([
+    { role: 'assistant', content: `Hello! I'm the AI assistant for ${companyData.name}. How can I help you today?` }
+  ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [rateLimitTest, setRateLimitTest] = useState<string[]>([])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -37,32 +39,9 @@ export default function ChatComponent() {
       setMessages([...newMessages, { role: 'assistant', content: data.message }])
     } catch (error) {
       console.error('Error:', error)
-      setMessages([...newMessages, { role: 'assistant', content: 'Sorry, an error occurred. Please try again.' }])
+      setMessages([...newMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }])
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const testRateLimit = async () => {
-    setRateLimitTest([])
-    for (let i = 0; i < 10; i++) {
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ messages: [{ role: 'user', content: 'Test message' }] }),
-        })
-
-        if (response.ok) {
-          setRateLimitTest(prev => [...prev, `Request ${i + 1}: OK`])
-        } else {
-          setRateLimitTest(prev => [...prev, `Request ${i + 1}: Rate limited`])
-        }
-      } catch {
-        setRateLimitTest(prev => [...prev, `Request ${i + 1}: Error`])
-      }
     }
   }
 
@@ -70,22 +49,16 @@ export default function ChatComponent() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-[400px]">
         <CardHeader>
-          <CardTitle>AI Chat</CardTitle>
-          <CardDescription>Chat with an AI assistant</CardDescription>
+          <CardTitle>{companyData.name} Assistant</CardTitle>
+          <CardDescription>{companyData.description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {messages.map((m, index) => (
               <div key={index} className={`p-2 rounded-lg ${m.role === 'user' ? 'bg-blue-100' : 'bg-green-100'}`}>
-                <span className="font-bold">{m.role === 'user' ? 'You: ' : 'AI: '}</span>
+                <span className="font-bold">{m.role === 'user' ? 'You: ' : 'Assistant: '}</span>
                 {m.content}
               </div>
-            ))}
-          </div>
-          <div className="mt-4">
-            <Button onClick={testRateLimit}>Test Rate Limit</Button>
-            {rateLimitTest.map((result, index) => (
-              <div key={index} className="text-sm mt-1">{result}</div>
             ))}
           </div>
         </CardContent>
@@ -94,7 +67,7 @@ export default function ChatComponent() {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Say something..."
+              placeholder="Ask about our products, services, policies..."
               className="flex-grow"
               disabled={isLoading}
             />

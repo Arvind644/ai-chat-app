@@ -1,6 +1,7 @@
 # AI Chat App with Rate Limiter
 
 This is a mvp integration project in which I used Upstash Redis as Rate limiter for accessing the openai api calls.
+And convert it to a company specific QA chat bot
 
 Some of the features of the application
 
@@ -8,6 +9,7 @@ Some of the features of the application
 - Integration with **OpenAI GPT-3.5 model** for generating responses
 - Rate limiting using **Upstash** to prevent abuse and manage costs
 - A testing mechanism to verify the rate limiting functionality
+- a company specific chat bot with custom prompt
 
 ## Getting Started
 
@@ -30,4 +32,5 @@ npm run dev
 ```
 
 You can access the application at `localhost:3000`. The UI will look like this
-![app ui](./public/app_ui.png)
+![app-ui](./public/ui.png)
+![app-ui-with-prompt](./public/qa-ui.png)
